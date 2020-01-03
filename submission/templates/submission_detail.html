@@ -1,0 +1,81 @@
+{% extends '_base.html' %}
+{% load render_table from django_tables2 %}
+{% load querystring from django_tables2 %}
+
+{% block title %}All Programs{% endblock %}
+
+{% block content %}
+{% if table.page %}
+  <div class="table-container">
+{% endif %}
+
+{% block table %}
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered table-striped"{% if table.attrs %} {{ table.attrs.as_html }}{% endif %}>
+            {% block table.thead %}
+            <thead>                 
+              <tr>
+                {% for column in table.columns %}
+                    {% if column.orderable %}
+                    <th {{ column.attrs.th.as_html }}><a href="{% querystring table.prefixed_order_by_field=column.order_by_alias.next %}">{{ column.header }}</a></th>
+                    {% else %}
+                    <th {{ column.attrs.th.as_html }}>{{ column.header }}</th>
+                    {% endif %}
+                {% endfor %}
+              </tr>
+            </thead>
+            {% endblock table.thead %}
+            {% block table.tbody %}
+            <tbody>
+                {% for row in table.page.object_list|default:table.rows %} {# support pagination #}
+                  {% block table.tbody.row %}
+                  <tr class="{% cycle "odd" "even" %}">
+                      {% for column, cell in row.items %}
+                          <td {{ column.attrs.td.as_html }}>{{ cell }}</td>
+                      {% endfor %}
+                  </tr>
+                  {% endblock table.tbody.row %}
+                {% empty %}
+                  {% if table.empty_text %}
+                  {% block table.tbody.empty_text %}
+                  <tr><td colspan="{{ table.columns|length }}">{{ table.empty_text }}</td></tr>
+                  {% endblock table.tbody.empty_text %}
+                  {% endif %}
+                {% endfor %}
+            </tbody>
+            {% endblock table.tbody %}
+            {% block table.tfoot %}
+            <tfoot></tfoot>
+            {% endblock table.tfoot %}
+        </table>
+    </div>
+{% endblock table %}
+{% if not isResolved and isCompany %}
+<form method="POST" action="{{ request.path }}/reward">
+  {% csrf_token %}
+  <textarea name="text" class="form-control" rows="2" id="reason"></textarea>
+  <input type="text" class="form-control" placeholder="Bounty" aria-label="Bounty" aria-describedby="basic-addon1" name="bounty" style="width:150px;">
+  <button class="btn btn-small btn-primary dark"><span class="hidden-phone"><i class="fa fa-user-plus"></i> Reward bounty</span></button>
+</form>
+<form method="POST" action="{{ request.path }}/reject">
+  {% csrf_token %}
+<textarea name="text" class="form-control" rows="2" id="reason"></textarea>
+<button class="btn btn-small btn-secondary dark"><span class="hidden-phone"><i class="fa fa-user-plus"></i>Reject Submission</span></button>
+</form>
+{% endif %}
+<hr>
+<form method="POST" action="{{ request.path }}/add_comment">
+{% csrf_token %}
+<textarea name="text" class="form-control" rows="2" id="comment"></textarea>
+<button type="Submit" class="btn btn-default">Add comment</button>
+</form>
+{% for comment in comments %}
+    <div class="comment">
+        <div class="date">{{ comment.created_date }}</div>
+        <strong>{{ comment.author }}</strong>
+        <p>{{ comment.text|linebreaks }}</p>
+    </div>
+{% empty %}
+    <p>No comments here yet :(</p>
+{% endfor %}
+{% endblock content %}

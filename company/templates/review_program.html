@@ -1,0 +1,27 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Detail Program{% endblock %}
+
+{% block content %}
+<h1>Detail Bug Bounty Program</h1>
+<table style="width:100%">
+<tr>
+    <th>Scope:</th>
+    <th>Base Bounty</th>
+    <th>Notice</th>
+</tr>
+<tr>
+    <td>
+    {% for url in program.scope %}
+    <li>{{ url }}</li>
+    {% endfor %}
+    </td>
+    <td>{{ program.baseBounty }}</td>
+    <td>{{ program.notice }}</td>
+</tr>
+</table>
+<p>Estimate gas: {{ gas }}</p>
+<br>
+<a href="{% url 'deploy_program' %}" class="btn btn-success" type="submit">Deploy contract</a>
+{% endblock content %}

@@ -1,0 +1,22 @@
+{% extends '_base.html' %}
+
+{% block title %}Deploy Contract{% endblock %}
+
+{% block content %}
+<h1>Deploy detail</h1>
+<label><p>Scope:</p></label>
+{% for url in program.scope %}
+    <li><p>{{ url }}</li>
+{% endfor %}
+
+<label><p>Min Bounty</p></label>
+    <li><p>{{ program.minBounty }}</p></li>
+
+<label><p>Max Bounty</p></label>
+    <li><p>{{ program.maxBounty }}</p></li>
+
+<label><p>Notice</p></label>
+    <li><p>{{ program.notice }}</p></li>
+
+<a href="{% url 'deploy_program' %}" class="btn btn-success" type="submit">Deploy contract</a>
+{% endblock content %}
